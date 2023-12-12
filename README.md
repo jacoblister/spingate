@@ -1,6 +1,6 @@
 # SpinGate
 
-SpinGate is a [1 bit computer](https://en.wikipedia.org/wiki/1-bit_computing) with a corresponding single bit [1-instruction language](https://en.wikipedia.org/wiki/One-instruction_set_computer) intended to be implemented with the minimum number of logic gates.  It has only a single 1-bit instruction - 0 or 1
+SpinGate is a [1 bit computer](https://en.wikipedia.org/wiki/1-bit_computing) with a corresponding single bit [1-instruction language](https://en.wikipedia.org/wiki/One-instruction_set_computer) intended to be implemented in hardware with the minimum number of logic gates.  It has only a single 1-bit instruction - 0 or 1
 
 # SpinGate Machine and Instruction
 
