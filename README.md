@@ -123,5 +123,5 @@ swap = (dst, src) => copy(tmp0, dst) + copy(dst, src) + copy(dst, tmp0)
 ```
 and = (dst, src) => nand(dst, src) + toggle(dst)
 or = (dst, src) => toggle(dst) + toggle(src) + nand(dst, src) + toggle(src)
-nor = (dst, src) => or (dst, src) + toggle(dst)
+nor = (dst, src) => or(dst, src) + toggle(dst)
 ```
