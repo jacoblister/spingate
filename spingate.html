@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        #register>tbody>tr>td {
+            width: 16px;
+            font-family: monospace;
+            text-align: center;
+            user-select: none;
+        }
+
+        #register>tbody #data>td {
+            height: 16px;
+        }
+
+        .bit-off {
+            background: green;
+        }
+
+        .bit-on {
+            background: lime;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="register">
+        <tbody>
+            <tr id="data"></tr>
+            <tr id="label"></tr>
+        </tbody>
+    </table>
+</body>
+
+<script>
+    const rowData = document.getElementById("data")
+    const rowLabel = document.getElementById("label")
+    const data = ["0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3"]
+
+    data.forEach((item, index) => {
+        const cell = document.createElement("td")
+        cell.className = index & 1 ? "bit-on" : "bit-off"
+        rowData.appendChild(cell)
+
+        const label = document.createElement("td")
+        label.textContent = item
+        rowLabel.appendChild(label)
+    })
+</script>
+
+</html>
