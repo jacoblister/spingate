@@ -15,7 +15,7 @@ The instruction is as follows
 | Instruction | Description                                         |
 |-------------|-----------------------------------------------------|
 |0            | rotate shift register                               |
-|1            | when load - accum <= bit0, phase <= shift           |
+|1            | when load - accum <= bit0, phase <= store           |
 |             | when store - bit0 <= bit0 NAND accum, phase <= load |
 
 # Implementation
