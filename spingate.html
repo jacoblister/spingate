@@ -3,14 +3,21 @@
 
 <head>
     <style>
+        input,
+        button,
+        select,
+        html {
+            font-family: monospace;
+            width: 100%;
+        }
+
         #register>tbody>tr>td {
             width: 16px;
             font-family: monospace;
-            text-align: center;
             user-select: none;
         }
 
-        #register>tbody #data>td {
+        tr {
             height: 16px;
         }
 
@@ -21,14 +28,134 @@
         .bit-on {
             background: lime;
         }
+
+        #store.bit-off {
+            background: darkred;
+        }
+
+        #store.bit-on {
+            background: red;
+        }
     </style>
 </head>
 
 <body>
+    <h1>SpinGate</h1>
+    <p>SpinGate is a [1-bit computer] with a corresponding single bit [1-instruction language].
+        It has only a single instruction - 0 or 1</p>
+    <p>Choose a program:</p>
+
     <table id="register">
         <tbody>
-            <tr id="data"></tr>
-            <tr id="label"></tr>
+            <tr>
+                <td>Program</td>
+                <td colspan="10">
+                    <select>
+                        <option>Builtin</option>
+                        <option>Logic Gates</option>
+                        <option>LSFR</option>
+                        <option>Cellular Automata</option>
+                        <option>Calculator</option>
+                    </select>
+                </td>
+                <td colspan="2">
+                    <button>Edit</button>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>Store/Load</td>
+                <td id="store" class="bit-on"></td>
+                <td class="bit-off"></td>
+                <td colspan="10"></td>
+            </tr>
+            <tr>
+                <td>Accumulator</td>
+                <td class="bit-off"></td>
+                <td colspan="11"></td>
+            </tr>
+            <tr></tr>
+            <tr id="data">
+                <td>Data</td>
+            </tr>
+            <tr id="label">
+                <td></td>
+            </tr>
+            <tr id="regs">
+                <td></td>
+                <td colspan="4"></td>
+                <td colspan="4" style="border: 1px solid black;">A:0</td>
+                <td colspan="4" style="border: 1px solid black;">B:0</td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td><button disabled>Step</button></td>
+                <td colspan="12"><input type="text" id="prog" value="0011" disabled></input></td>
+            </tr>
+            <tr>
+                <td>Loop</td>
+                <td colspan="12">
+                    <select>
+                        <option>None</option>
+                        <option>Slow</option>
+                        <option>Medium</option>
+                        <option>Fast</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Speed</td>
+                <td colspan="12" style="display:flex; flex-direction:row;">
+                    <input id="step" type="radio"></input>
+                    <label for="step">step</input>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="12" style="display:flex; flex-direction:row;">
+                    <input id="slow" type="radio"></input>
+                    <label for="slow">slow</input>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="12" style="display:flex; flex-direction:row;">
+                    <input id="medium" type="radio" checked></input>
+                    <label for="medium">medium</input>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="12" style="display:flex; flex-direction:row;">
+                    <input id="fast" type="radio"></input>
+                    <label for="fast">fast</input>
+                </td>
+            </tr>
+            <tr>
+                <td><button>Spin</button></td>
+                <td colspan="12"><input id="prog0" value="0" disabled></input></td>
+            </tr>
+            <tr>
+                <td><button>Gate</button></td>
+                <td colspan="12"><input id="prog1" value="1" disabled></input></td>
+            </tr>
+            <tr>
+                <td><button>Back</button></td>
+                <td colspan="12"><input id="prog2" value="000" disabled></input></td>
+            </tr>
+            <tr>
+                <td><button>Toggle</button></td>
+                <td colspan="12"><input id="prog3" value="11" disabled></input></td>
+            </tr>
+            <tr>
+                <td><button>Nop</button></td>
+                <td colspan="12"><input id="prog4" value="1111" disabled></input></td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td><button>Custom</button></td>
+                <td colspan="12"><input id="progC" value=""></td>
+            </tr>
         </tbody>
     </table>
 </body>
@@ -37,6 +164,12 @@
     const rowData = document.getElementById("data")
     const rowLabel = document.getElementById("label")
     const data = ["0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3"]
+    // const data = [
+    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
+    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
+    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
+    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3"
+    // ]
 
     data.forEach((item, index) => {
         const cell = document.createElement("td")
