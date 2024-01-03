@@ -1,0 +1,34 @@
+input,
+button,
+select,
+html {
+    font-family: monospace;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#register>tbody>tr>td {
+    width: 16px;
+    font-family: monospace;
+    user-select: none;
+}
+
+tr {
+    height: 16px;
+}
+
+.bit-off {
+    background: green;
+}
+
+.bit-on {
+    background: lime;
+}
+
+#store.bit-off {
+    background: darkred;
+}
+
+#store.bit-on {
+    background: red;
+}
