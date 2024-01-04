@@ -7,7 +7,7 @@ html {
     box-sizing: border-box;
 }
 
-#register>tbody>tr>td {
+#table>tbody>tr>td {
     width: 16px;
     font-family: monospace;
     user-select: none;
@@ -32,3 +32,13 @@ tr {
 #store.bit-on {
     background: red;
 }
+
+/* #editor { 
+    height: 200px;
+    width: 640px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+} */

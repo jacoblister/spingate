@@ -3,153 +3,138 @@
 
 <head>
     <link rel="stylesheet" href="spingate.css">
+    <script src="spingate.js"></script>
+    <script>
+        function elem(name, ...args) {
+            let element = document.createElement(name)
+
+            args.forEach(arg => {
+                if (arg.tagName) {
+                    element.appendChild(arg)
+                } else if (typeof arg == "string") {
+                    element.textContent = arg
+                } else if (Array.isArray(arg)) {
+                    arg.forEach(item => {
+                        element.appendChild(item)
+                    })
+                } else if (typeof arg == "object") {
+                    for (key in arg) {
+                        if (arg[key] != undefined) {
+                            element.setAttribute(key, arg[key])
+                        }
+                    }
+                }
+            })
+
+            return element
+        }
+
+        function render() {
+            const data = ["", "0", "", "", "", "B3", "B2", "B1", "B0", "A0", "A1", "A2", "A3"]
+
+            const table = document.getElementById("table");
+            while (table.firstChild) {
+                table.removeChild(table.lastChild);
+            }
+
+            table.appendChild(elem("tbody",
+                elem("tr",
+                    elem("td", "Program"),
+                    elem("td", { colspan: 10 },
+                        elem("select", [
+                            "Builtin",
+                            "Logic Gates",
+                            "LSFR",
+                            "Cellular Automata",
+                            "Calculator"
+                        ].map(option => elem("option", option)))
+                    ),
+                    elem("td", { colspan: 3 },
+                        elem("button", "Edit")
+                    )
+                ),
+                elem("tr"),
+                elem("tr",
+                    elem("td", "Store/Load"),
+                    elem("td", { class: "bit-off" }),
+                    elem("td", { class: "bit-on", id: "store" }),
+                ),
+                elem("tr",
+                    elem("td", "Accumulator"),
+                    elem("td", { class: "bit-off" }),
+                ),
+                elem("tr"),
+                elem("tr",
+                    elem("td", "Data"),
+                    data.map((bit, index) => elem("td", { class: index & 1 ? "bit-on" : "bit-off" }))
+                ),
+                elem("tr",
+                    elem("td"),
+                    data.map((bit, index) => elem("td", bit))
+                ),
+                elem("tr",
+                    elem("td"),
+                    elem("td", { colspan: 5 }),
+                    elem("td", { colspan: 4, style: "border: 1px solid black;" }, "B:0"),
+                    elem("td", { colspan: 4, style: "border: 1px solid black;" }, "A:0"),
+                ),
+                elem("tr"),
+                elem("tr",
+                    elem("td", elem("button", { disabled: 1 }, "Step")),
+                    elem("td", { colspan: 13 },
+                        elem("input", { type: "text", value: "0011", disabled: 1 })
+                    )
+                ),
+                elem("tr",
+                    elem("td", "Loop"),
+                    elem("td", { colspan: 13 },
+                        elem("select", [
+                            "None",
+                            "Slow",
+                            "Medium",
+                            "Fase",
+                        ].map(option => elem("option", option)))
+                    ),
+                ),
+                [
+                    "Step",
+                    "Slow",
+                    "Medium", ,
+                    "Fast",
+                ].map((speed, index) => elem("tr",
+                    elem("td", index == 0 ? "Speed" : ""),
+                    elem("td", { colspan: 13, style: "display:flex; flex-direction:row;" },
+                        elem("input", { id: speed, type: "radio", checked: speed == "Medium" ? 1 : undefined }),
+                        elem("label", { for: speed }, speed),
+                    ),
+                )),
+                [
+                    ["Spin", "0"],
+                    ["Gate", "1"],
+                    ["Back", "000"],
+                    ["Toggle", "11"],
+                    ["Nop", "1111"],
+                ].map(prog => elem("tr",
+                    elem("td", elem("button", prog[0])),
+                    elem("td", { colspan: 13 }, elem("input", { value: prog[1], disabled: 1 })),
+                )),
+                elem("tr"),
+                elem("tr",
+                    elem("td", elem("button", "Custom")),
+                    elem("td", { colspan: 13 }, elem("input", { value: "" })),
+                ),
+            ))
+        }
+    </script>
 </head>
 
-<body>
+<body onload="render()">
     <h1>SpinGate</h1>
     <p>SpinGate is a [1-bit computer] with a corresponding single bit [1-instruction language].
         It has only a single instruction - 0 or 1</p>
     <p>Choose a program:</p>
 
-    <table id="register">
-        <tbody>
-            <tr>
-                <td>Program</td>
-                <td colspan="10">
-                    <select>
-                        <option>Builtin</option>
-                        <option>Logic Gates</option>
-                        <option>LSFR</option>
-                        <option>Cellular Automata</option>
-                        <option>Calculator</option>
-                    </select>
-                </td>
-                <td colspan="3">
-                    <button>Edit</button>
-                </td>
-            </tr>
-            <tr></tr>
-            <tr>
-                <td>Store/Load</td>
-                <td class="bit-off"></td>
-                <td id="store" class="bit-on"></td>
-                <td colspan="11"></td>
-            </tr>
-            <tr>
-                <td>Accumulator</td>
-                <td class="bit-off"></td>
-                <td colspan="12"></td>
-            </tr>
-            <tr></tr>
-            <tr id="data">
-                <td>Data</td>
-            </tr>
-            <tr id="label">
-                <td></td>
-            </tr>
-            <tr id="regs">
-                <td></td>
-                <td colspan="4" style="border: 1px solid black;">B:0</td>
-                <td colspan="4" style="border: 1px solid black;">A:0</td>
-                <td colspan="5"></td>
-            </tr>
-            <tr></tr>
-            <tr>
-                <td><button disabled>Step</button></td>
-                <td colspan="13"><input type="text" id="prog" value="0011" disabled></input></td>
-            </tr>
-            <tr>
-                <td>Loop</td>
-                <td colspan="13">
-                    <select>
-                        <option>None</option>
-                        <option>Slow</option>
-                        <option>Medium</option>
-                        <option>Fast</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Speed</td>
-                <td colspan="13" style="display:flex; flex-direction:row;">
-                    <input id="step" type="radio"></input>
-                    <label for="step">step</input>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td colspan="13" style="display:flex; flex-direction:row;">
-                    <input id="slow" type="radio"></input>
-                    <label for="slow">slow</input>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td colspan="13" style="display:flex; flex-direction:row;">
-                    <input id="medium" type="radio" checked></input>
-                    <label for="medium">medium</input>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td colspan="13" style="display:flex; flex-direction:row;">
-                    <input id="fast" type="radio"></input>
-                    <label for="fast">fast</input>
-                </td>
-            </tr>
-            <tr>
-                <td><button>Spin</button></td>
-                <td colspan="13"><input id="prog0" value="0" disabled></input></td>
-            </tr>
-            <tr>
-                <td><button>Gate</button></td>
-                <td colspan="13"><input id="prog1" value="1" disabled></input></td>
-            </tr>
-            <tr>
-                <td><button>Back</button></td>
-                <td colspan="13"><input id="prog2" value="000" disabled></input></td>
-            </tr>
-            <tr>
-                <td><button>Toggle</button></td>
-                <td colspan="13"><input id="prog3" value="11" disabled></input></td>
-            </tr>
-            <tr>
-                <td><button>Nop</button></td>
-                <td colspan="13"><input id="prog4" value="1111" disabled></input></td>
-            </tr>
-            <tr></tr>
-            <tr>
-                <td><button>Custom</button></td>
-                <td colspan="13"><input id="progC" value=""></td>
-            </tr>
-        </tbody>
-    </table>
+    <table id="table"></table>
 </body>
-
-<script src="spingate.js"></script>
-
-<script>
-    const rowData = document.getElementById("data")
-    const rowLabel = document.getElementById("label")
-//    const data = ["0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3"]
-    const data = ["B3", "B2", "B1", "B0", "A3", "A2", "A1", "A0", "", "", "", "", "0"]
-
-    // const data = [
-    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
-    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
-    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3",
-    //     "0", "", "", "", "A0", "A1", "A2", "A3", "B0", "B1", "B2", "B3"
-    // ]
-
-    data.forEach((item, index) => {
-        const cell = document.createElement("td")
-        cell.className = index & 1 ? "bit-on" : "bit-off"
-        rowData.appendChild(cell)
-
-        const label = document.createElement("td")
-        label.textContent = item
-        rowLabel.appendChild(label)
-    })
-</script>
 
 </html>
