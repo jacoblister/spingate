@@ -5,11 +5,6 @@
     <link rel="stylesheet" href="spingate.css">
     <script src="spingate.js"></script>
     <script>
-        let program = {
-            name: "Logic Gates",
-            speed: "Medium"
-        }
-
         function elem(name, ...args) {
             let element = document.createElement(name)
 
@@ -37,8 +32,6 @@
         }
 
         function render() {
-            const data = ["", "0", "", "", "", "B3", "B2", "B1", "B0", "A0", "A1", "A2", "A3"]
-
             const table = document.getElementById("table");
             while (table.firstChild) {
                 table.removeChild(table.lastChild);
@@ -51,53 +44,72 @@
                         elem("select",
                             {
                                 change: (e) => {
-                                    program.name = e.target.value
-                                    render()
+                                    loadFile(e.target.value)
                                 }
                             },
                             [
-                                "Builtin",
-                                "Logic Gates",
-                                "LSFR",
-                                "Cellular Automata",
-                                "Calculator"
-                            ].map(option => elem("option", { selected: program.name == option ? 1 : undefined }, option)))
+                                "builtin.js",
+                                "logicgates.js",
+                                "lsfr.js",
+                                "cellular.js",
+                                "calculator.js"
+                            ].map(option => elem("option", { selected: cpu.filename == option ? 1 : undefined }, option)))
                     ),
-                    elem("td", { colspan: 3 },
-                        elem("button", { id: "edit" }, "Edit")
-                    )
+                    // elem("td", { colspan: 3 },
+                    //     elem("button", { id: "edit", disabled: 1 }, "Edit")
+                    // )
                 ),
                 elem("tr"),
                 elem("tr",
                     elem("td", "Store/Load"),
-                    elem("td", { class: "bit-off" }),
-                    elem("td", { class: "bit-on", id: "store" }),
+                    elem("td", { id: "load", class: "bit-off" }),
+                    elem("td", { id: "store", class: "bit-on" }),
                 ),
                 elem("tr",
                     elem("td", "Accumulator"),
-                    elem("td", { class: "bit-off" }),
+                    elem("td", { id: "accum", class: "bit-off" }),
                 ),
                 elem("tr"),
                 elem("tr",
                     elem("td", "Data"),
-                    data.map((bit, index) => elem("td", { class: index & 1 ? "bit-on" : "bit-off" }))
+                    cpu.label.map((bit, index) => elem("td", { id: "data-" + index, class: cpu.data & (1 << index) ? "bit-on" : "bit-off" }))
                 ),
                 elem("tr",
                     elem("td"),
-                    data.map((bit, index) => elem("td", bit))
+                    cpu.label.map((bit, index) => elem("td", bit))
                 ),
-                elem("tr",
-                    elem("td"),
-                    elem("td", { colspan: 5 }),
-                    elem("td", { colspan: 4, style: "border: 1px solid black;" }, "B:0"),
-                    elem("td", { colspan: 4, style: "border: 1px solid black;" }, "A:0"),
-                ),
+                // elem("tr",
+                //     elem("td"),
+                //     elem("td", { colspan: 5 }),
+                //     elem("td", { colspan: 4, style: "border: 1px solid black;" }, "B:0"),
+                //     elem("td", { colspan: 4, style: "border: 1px solid black;" }, "A:0"),
+                // ),
                 elem("tr"),
                 elem("tr",
                     elem("td", elem("button", { disabled: 1 }, "Step")),
                     elem("td", { colspan: 13 },
-                        elem("input", { type: "text", value: "0011", disabled: 1 })
+                        elem("input", { type: "text", value: "", disabled: 1 })
                     )
+                ),
+                elem("tr"),
+                cpu.prog.map((prog, index) => elem("tr",
+                    elem("td", elem("button",
+                        {
+                            click: (e) => {
+                                exec(cpu.prog[index].code)
+                                update()
+                            }
+                        },
+                        prog.name)),
+                    elem("td", { colspan: 13 }, elem("input", { value: prog.code, disabled: 1 })),
+                )),
+                elem("tr"),
+                elem("tr",
+                    elem("td", { colspan: 1 }, elem("button", "<< Less")),
+                ),
+                elem("tr",
+                    elem("td", elem("button", "Custom")),
+                    elem("td", { colspan: 13 }, elem("input", { value: "" })),
                 ),
                 elem("tr",
                     elem("td", "Loop"),
@@ -113,42 +125,57 @@
                 [
                     "Step",
                     "Slow",
-                    "Medium", ,
+                    "Medium",
                     "Fast",
                 ].map((speed, index) => elem("tr",
                     elem("td", index == 0 ? "Speed" : ""),
                     elem("td", { colspan: 13, style: "display:flex; flex-direction:row;" },
                         elem("input", {
-                            id: speed, type: "radio", checked: speed == program.speed ? 1 : undefined,
+                            id: speed, type: "radio", checked: speed == cpu.speed ? 1 : undefined,
                             click: (e) => {
-                                program.speed = e.target.id
+                                cpu.speed = e.target.id
                                 render()
                             }
                         }),
                         elem("label", { for: speed }, speed),
                     ),
                 )),
-                [
-                    ["Spin", "0"],
-                    ["Gate", "1"],
-                    ["Back", "000"],
-                    ["Toggle", "11"],
-                    ["Nop", "1111"],
-                ].map(prog => elem("tr",
-                    elem("td", elem("button", prog[0])),
-                    elem("td", { colspan: 13 }, elem("input", { value: prog[1], disabled: 1 })),
-                )),
-                elem("tr"),
-                elem("tr",
-                    elem("td", elem("button", "Custom")),
-                    elem("td", { colspan: 13 }, elem("input", { value: "" })),
-                ),
             ))
+        }
+
+        function update() {
+            accum = document.getElementById("accum")
+            accum.setAttribute("class", cpu.accum ? "bit-on" : "bit-off")
+
+            load = document.getElementById("load")
+            load.setAttribute("class", !cpu.store ? "bit-on" : "bit-off")
+
+            store = document.getElementById("store")
+            store.setAttribute("class", cpu.store ? "bit-on" : "bit-off")
+
+            for (let i = 0; i < cpu.bits; i++) {
+                data = document.getElementById("data-" + i)
+                data.setAttribute("class", cpu.data & (1 << i) ? "bit-on" : "bit-off")
+            }
+        }
+
+        async function loadFile(filename) {
+            let program = await (await fetch("prog/" + filename)).text()
+            loadProgram(program)
+
+            cpu.filename = filename
+            render()
+            update()
+        }
+
+        function onload() {
+            loadFile("builtin.js")
+            // render()
         }
     </script>
 </head>
 
-<body onload="render()">
+<body onload="onload()">
     <h1>SpinGate</h1>
     <p>SpinGate is a [1-bit computer] with a corresponding single bit [1-instruction language].
         It has only a single instruction - 0 or 1</p>

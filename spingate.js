@@ -1,11 +1,12 @@
-let cpu = {data: 0, bits: 13, index: 0, store: false, accum:0, prog: []}
+let cpu = {}
 
 function init(register) {
-    next = {data: 0, bits: 4, index: 0, store: false, accum: 0, prog: []}
+    next = {data: 0, bits: register.length, index: 0, store: false, accum: 0, prog: [], speed: "Medium"}
+    next.label = [...Array(register.length).keys()].map(i => i + "")
 }
 
-function prog(name, data) {
-    next.prog.push({name, data})
+function prog(name, code) {
+    next.prog.push({name, code})
 }
 
 function done() {
@@ -23,11 +24,14 @@ function loadProgram(program) {
 
 function spin() {
     cpu.data = cpu.data << 1 | (cpu.data >> (cpu.bits - 1))
+    cpu.data = cpu.data & ((1 << cpu.bits) - 1)
 }
 
 function gate() {
     if (cpu.store) {
-        cpu.data = (cpu.data & -2) | !(cpu.accum & (cpu.data & 1))
+        let next = !(cpu.accum & (cpu.data & 1))
+        cpu.data = (cpu.data & -2) | next
+        cpu.accum = next
     } else {
         cpu.accum = cpu.data & 1
     }
@@ -44,10 +48,22 @@ function dump() {
     console.log("data:", data)
 }
 
-function exec(program) {
+function step() {
+    let code = cpu.code[0]
+    if (code == "0") { spin() }
+    if (code == "1") { gate() }
+    cpu.code = cpu.code.slice(1)
     
+    return cpu.code.length > 0
+}
+
+function exec(code) {
+    cpu.code = code
+    while (step()) {}
 }
 
 function nand(bitA, bitB, bitOut) {
-
 }
+
+init("0000")
+done()
