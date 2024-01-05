@@ -5,8 +5,31 @@ function init(register) {
     next.label = [...Array(register.length).keys()].map(i => i + "")
 }
 
+let pos = 0
+
 function prog(name, code) {
+    while (pos != 0) {
+        code = code + "0"
+        pos = (pos + next.bits - 1) % next.bits
+    }
+
     next.prog.push({name, code})
+}
+
+function nand(dst, src) {
+    let code = ""
+    while (pos != src) {
+        code = code + "0"
+        pos = (pos + next.bits - 1) % next.bits
+    }
+    code = code + "1"
+    while (pos != dst) {
+        code = code + "0"
+        pos = (pos + next.bits - 1) % next.bits
+    }
+    code = code + "1"
+    
+    return code
 }
 
 function done() {
@@ -49,7 +72,7 @@ function dump() {
 }
 
 function step() {
-    let code = cpu.code[0]
+    code = cpu.code[0]
     if (code == "0") { spin() }
     if (code == "1") { gate() }
     cpu.code = cpu.code.slice(1)
@@ -60,9 +83,6 @@ function step() {
 function exec(code) {
     cpu.code = code
     while (step()) {}
-}
-
-function nand(bitA, bitB, bitOut) {
 }
 
 init("0000")
