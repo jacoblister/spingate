@@ -29,8 +29,6 @@ function reg(from, to, label, seg7) {
 
     next.reg.push({ from, to, bits, label, seg7})
 
-    console.log(bits)
-
     return bits
 }
 
