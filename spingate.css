@@ -22,6 +22,12 @@ tr {
     text-align: right;
 }
 
+.seg7 {
+    border: 1px solid black;
+    text-align: right;
+    height: 70px;
+}
+
 .bit-off {
     background: green;
 }
@@ -47,3 +53,124 @@ tr {
     bottom: 0;
     left: 0;
 } */
+
+div.digit {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    height: 70px;
+    width: 52px;
+    position: relative;
+    /* transform: skew(170deg); */
+}
+
+div.segA {
+    width: 16px;
+    border-top: 10px solid #DDD;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    left: 2px;
+}
+
+div.segB {
+    height: 16px;
+    border-top: 10px solid transparent;
+    border-right: 10px solid #DDD;
+    border-bottom: 5px solid transparent;
+    position: absolute;
+    top: 2px;
+    left: 30px
+}
+
+div.segC {
+    height: 16px;
+    border-top: 5px solid transparent;
+    border-right: 10px solid #DDD;
+    border-bottom: 10px solid transparent;
+    position: absolute;
+    top: 37px;
+    left: 30px
+}
+
+div.segD {
+    width: 16px;
+    border-bottom: 10px solid #DDD;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    left: 2px;
+    bottom: 0px;
+}
+
+div.segE {
+    height: 16px;
+    border-top: 5px solid transparent;
+    border-left: 10px solid #DDD;
+    border-bottom: 10px solid transparent;
+    position: absolute;
+    top: 37px;
+}
+
+div.segF {
+    height: 16px;
+    border-top: 10px solid transparent;
+    border-left: 10px solid #DDD;
+    border-bottom: 5px solid transparent;
+    position: absolute;
+    top: 2px;
+}
+
+div.segGTop {
+    width: 16px;
+    border-bottom: 5px solid #DDD;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    left: 2px;
+    top: 30px;
+}
+
+div.segGBottom {
+    width: 16px;
+    border-top: 5px solid #DDD;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    top: 35px;
+    left: 2px;
+}
+
+div.segH {
+    position: absolute;
+    top: 60px;
+    left: 42px;
+    border-radius: 5px;
+    /*Makes it a circle*/
+    width: 10px;
+    height: 10px;
+    background: #DDD;
+}
+
+div:is(.segA,.segGBottom).on {
+    border-top-color: red;
+}
+
+div:is(.segB,.segC).on {
+    border-right-color: red;
+}
+
+div:is(.segD,.segGTop).on {
+    border-bottom-color: red;
+}
+
+div:is(.segE,.segF).on {
+    border-left-color: red;
+}
+
+div.segH.on {
+    background: red;
+}
+

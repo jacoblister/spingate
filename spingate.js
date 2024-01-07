@@ -1,7 +1,7 @@
 let cpu = {}
 
 function init(register) {
-    next = {data: 0, bits: register.length, index: 0, store: false, accum: 0, prog: [], reg: [], speed: "Medium", code: ""}
+    next = { data: 0, bits: register.length, index: 0, store: false, accum: 0, prog: [], reg: [], speed: "Medium", code: "" }
     next.label = Array(register.length).fill("")
 
     for (i = 0; i < next.bits; i++) {
@@ -16,15 +16,26 @@ function bit(index, label) {
     return index
 }
 
-function reg(from, to, label) {
-    bits = []
+function reg(from, to, label, seg7) {
+    let bits = []
     for (i = from; i >= to; i--) {
         bits.push(i)
     }
 
-    next.reg.push({from, to, bits, label})
+    if (seg7) {
+        bits.reverse()
+        // bits = [8, 7, 1, 4, 3, 5, 6, 2]
+    }
+
+    next.reg.push({ from, to, bits, label, seg7})
+
+    console.log(bits)
 
     return bits
+}
+
+function seg7(from, to, label) {
+    return reg(from, to, label, 1)
 }
 
 let pos = 0
@@ -35,7 +46,7 @@ function prog(name, code) {
         pos = (pos + next.bits - 1) % next.bits
     }
 
-    next.prog.push({name, code})
+    next.prog.push({ name, code })
 }
 
 function nand(src, dst) {
@@ -50,7 +61,7 @@ function nand(src, dst) {
         pos = (pos + next.bits - 1) % next.bits
     }
     code = code + "1"
-    
+
     return code
 }
 
@@ -98,13 +109,13 @@ function step() {
     if (code == "0") { spin() }
     if (code == "1") { gate() }
     cpu.code = cpu.code.slice(1)
-    
+
     return cpu.code.length > 0
 }
 
 function exec(code) {
     cpu.code = code
-    while (step()) {}
+    while (step()) { }
 }
 
 init("0000")

@@ -64,7 +64,8 @@
             let regIndex = 0;
             while (i < cpu.bits && regIndex < cpu.reg.length) {
                 if (cpu.reg[regIndex].to == i) {
-                    cols.push({ id: "reg-" + regIndex, colspan: cpu.reg[regIndex].from - cpu.reg[regIndex].to + 1, label: cpu.reg[regIndex].label })
+                    let type = cpu.reg[regIndex].seg7 ? "seg7" : "register"
+                    cols.push({ id: "reg-" + regIndex, colspan: cpu.reg[regIndex].from - cpu.reg[regIndex].to + 1, label: cpu.reg[regIndex].label, class: type })
                     i = cpu.reg[regIndex].from + 1
                     regIndex++
                 } else {
@@ -76,7 +77,21 @@
             regs = []
             if (cols.length > 1) {
                 regs = elem("tr",
-                    cols.map(reg => elem("td", { id: reg.id, colspan: reg.colspan, class: reg.label ? "register" : undefined }, reg.label))
+                    cols.map(reg => elem("td", { id: reg.id, colspan: reg.colspan, class: reg.class },
+                        reg.class == "seg7" ?
+                            elem("div", { class: "digit" },
+                                elem("div", { class: "segA" }),
+                                elem("div", { class: "segB" }),
+                                elem("div", { class: "segC" }),
+                                elem("div", { class: "segD" }),
+                                elem("div", { class: "segE" }),
+                                elem("div", { class: "segF" }),
+                                elem("div", { class: "segG segGTop" }),
+                                elem("div", { class: "segG segGBottom" }),
+                                elem("div", { class: "segH" })
+                            )
+                            : reg.label
+                    ))
                 )
             }
 
@@ -95,7 +110,8 @@
                                 "logicgates.js",
                                 "lsfr.js",
                                 "cellular.js",
-                                "calculator.js"
+                                "calculator.js",
+                                "sevenseg.js"
                             ].map(option => elem("option", { selected: cpu.filename == option ? 1 : undefined }, option)))
                     ),
                     // elem("td", { colspan: 3 },
@@ -200,15 +216,31 @@
             code.setAttribute("value", cpu.code)
 
             for (let i = 0; i < cpu.reg.length; i++) {
-                value = 0
-                for (let j = 0; j < cpu.reg[i].bits.length; j++) {
-                    if ((1 << cpu.reg[i].bits[j]) & cpu.data) {
-                        value |= (1 << j)
+                if (cpu.reg[i].seg7) {
+                    codes = ["segA", "segB", "segC", "segD", "segE", "segF", "segG", "segH"]
+                    for (j = 0; j < 8; j++) {
+                        let segs = document.getElementsByClassName(codes[j])
+                        let on = (1 << cpu.reg[i].bits[j]) & cpu.data
+                        for (let h = 0; h < segs.length; h++) {
+                            if (on) {
+                                segs[h].classList.add('on');
+                            } else {
+                                segs[h].classList.remove('on');
+                            }
+                        }
                     }
-                }
 
-                let reg = document.getElementById("reg-" + i)
-                reg.textContent = cpu.reg[i].label + ":" + value
+                } else {
+                    value = 0
+                    for (let j = 0; j < cpu.reg[i].bits.length; j++) {
+                        if ((1 << cpu.reg[i].bits[j]) & cpu.data) {
+                            value |= (1 << j)
+                        }
+                    }
+
+                    let reg = document.getElementById("reg-" + i)
+                    reg.textContent = cpu.reg[i].label + ":" + value
+                }
             }
         }
 
@@ -223,7 +255,8 @@
 
         function onload() {
             // loadFile("logicgates.js")
-            loadFile("calculator.js")
+            // loadFile("calculator.js")
+            loadFile("sevenseg.js")
             // render()
         }
     </script>
