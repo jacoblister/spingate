@@ -17,6 +17,11 @@ tr {
     height: 16px;
 }
 
+.register {
+    border: 1px solid black;
+    text-align: right;
+}
+
 .bit-off {
     background: green;
 }

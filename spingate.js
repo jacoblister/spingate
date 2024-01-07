@@ -1,8 +1,30 @@
 let cpu = {}
 
 function init(register) {
-    next = {data: 0, bits: register.length, index: 0, store: false, accum: 0, prog: [], speed: "Medium"}
-    next.label = [...Array(register.length).keys()].map(i => i + "")
+    next = {data: 0, bits: register.length, index: 0, store: false, accum: 0, prog: [], reg: [], speed: "Medium", code: ""}
+    next.label = Array(register.length).fill("")
+
+    for (i = 0; i < next.bits; i++) {
+        if (register[i] == "1") {
+            next.data |= (1 << i)
+        }
+    }
+}
+
+function bit(index, label) {
+    next.label[index] = label
+    return index
+}
+
+function reg(from, to, label) {
+    bits = []
+    for (i = from; i >= to; i--) {
+        bits.push(i)
+    }
+
+    next.reg.push({from, to, bits, label})
+
+    return bits
 }
 
 let pos = 0
@@ -16,7 +38,7 @@ function prog(name, code) {
     next.prog.push({name, code})
 }
 
-function nand(dst, src) {
+function nand(src, dst) {
     let code = ""
     while (pos != src) {
         code = code + "0"

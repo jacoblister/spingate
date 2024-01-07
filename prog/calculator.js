@@ -1,0 +1,45 @@
+init("0000000000000")
+
+Z = bit(0, "0")
+T0 = bit(1, "T0")
+T1 = bit(2, "T1")
+C = bit(4, "C")
+A3 = bit(5, "A3")
+A2 = bit(6, "A2")
+A1 = bit(7, "A1")
+A0 = bit(8, "A0")
+B3 = bit(9, "B3")
+B2 = bit(10, "B2")
+B1 = bit(11, "B1")
+B0 = bit(12, "B0")
+
+A = reg(A0, A3, "A")
+B = reg(B0, B3, "B")
+
+toggle = (dst) => nand(dst, dst)
+set = (dst) => nand(Z, dst)
+clear = (dst) => set(dst) + nand(dst, dst)
+copy = (src, dst) => set(dst) + nand(src, dst) + nand(dst, dst)
+swap = (src, dst, tmp) => copy(src, tmp) + copy(dst, src) + copy(tmp, dst)
+and = (src, dst) => nand(src, dst) + nand(dst, dst)
+or = (src, dst) => toggle(dst) + toggle(src) + nand(src, dst) + nand(dst, dst) + toggle(dst) + toggle(src)
+xor = (src, dst, tmpA) => copy(src, tmpA) + nand(dst, tmpA) + nand(tmpA, dst) + nand(src, tmpA) + nand(tmpA, dst)
+halfadd = (src, dst, carry, tmpA) => copy(dst, carry) + xor(src, dst, tmpA) + and(src, carry)
+fulladd = (src, dst, carry, tmpA, tmpB) => halfadd(carry, dst, tmpA, tmpB) + copy(tmpA, carry) + halfadd(src, dst, tmpA, tmpB) + or(tmpA, carry)
+add4 = (src, dst, carry, tmpA, tmpB) =>
+    halfadd(src[0], dst[0], carry, tmpA, tmpB) +
+    fulladd(src[1], dst[1], carry, tmpA, tmpB) + 
+    fulladd(src[2], dst[2], carry, tmpA, tmpB) + 
+    fulladd(src[3], dst[3], carry, tmpA, tmpB)
+
+prog("!A0", toggle(A0))
+prog("!A1", toggle(A1))
+prog("!A2", toggle(A2))
+prog("!A3", toggle(A3))
+prog("!B0", toggle(B0))
+prog("!B1", toggle(B1))
+prog("!B2", toggle(B2))
+prog("!B3", toggle(B3))
+prog("B0=A0(+)B0", halfadd(A0, B0, C, T0))
+prog("B0=A0+B0", fulladd(A0, B0, C, T0, T1))
+prog("B=A+B", add4(A, B, C, T0, T1))

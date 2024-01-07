@@ -9,7 +9,8 @@
             let element = document.createElement(name)
 
             args.forEach(arg => {
-                if (arg.tagName) {
+                if (arg == undefined) { }
+                else if (arg.tagName) {
                     element.appendChild(arg)
                 } else if (typeof arg == "string") {
                     element.textContent = arg
@@ -31,10 +32,52 @@
             return element
         }
 
+        function execProgram(code) {
+            exec(code)
+            update()
+            return
+
+            if (cpu.code) {
+                return
+            }
+
+            cpu.code = code
+            function nextStep() {
+                if (step()) {
+                    setTimeout(() => {
+                        nextStep()
+                    }, 1)
+                }
+                update()
+            }
+            nextStep()
+        }
+
         function render() {
             const table = document.getElementById("table");
             while (table.firstChild) {
                 table.removeChild(table.lastChild);
+            }
+
+            cols = [{ colspan: 1 }]
+            let i = 0;
+            let regIndex = 0;
+            while (i < cpu.bits && regIndex < cpu.reg.length) {
+                if (cpu.reg[regIndex].to == i) {
+                    cols.push({ id: "reg-" + regIndex, colspan: cpu.reg[regIndex].from - cpu.reg[regIndex].to + 1, label: cpu.reg[regIndex].label })
+                    i = cpu.reg[regIndex].from + 1
+                    regIndex++
+                } else {
+                    cols.push({ colspan: 1 })
+                    i++
+                }
+            }
+
+            regs = []
+            if (cols.length > 1) {
+                regs = elem("tr",
+                    cols.map(reg => elem("td", { id: reg.id, colspan: reg.colspan, class: reg.label ? "register" : undefined }, reg.label))
+                )
             }
 
             table.appendChild(elem("tbody",
@@ -78,17 +121,12 @@
                     elem("td"),
                     cpu.label.map((bit, index) => elem("td", bit))
                 ),
-                // elem("tr",
-                //     elem("td"),
-                //     elem("td", { colspan: 5 }),
-                //     elem("td", { colspan: 4, style: "border: 1px solid black;" }, "B:0"),
-                //     elem("td", { colspan: 4, style: "border: 1px solid black;" }, "A:0"),
-                // ),
+                regs,
                 elem("tr"),
                 elem("tr",
                     elem("td", elem("button", { disabled: 1 }, "Step")),
                     elem("td", { colspan: 13 },
-                        elem("input", { type: "text", value: "", disabled: 1 })
+                        elem("input", { id: "code", type: "text", value: "", disabled: 1 })
                     )
                 ),
                 elem("tr"),
@@ -96,8 +134,7 @@
                     elem("td", elem("button",
                         {
                             click: (e) => {
-                                exec(cpu.prog[index].code)
-                                update()
+                                execProgram(cpu.prog[index].code)
                             }
                         },
                         prog.name)),
@@ -141,35 +178,52 @@
                     ),
                 )),
             ))
+            update()
         }
 
         function update() {
-            accum = document.getElementById("accum")
+            let accum = document.getElementById("accum")
             accum.setAttribute("class", cpu.accum ? "bit-on" : "bit-off")
 
-            load = document.getElementById("load")
+            let load = document.getElementById("load")
             load.setAttribute("class", !cpu.store ? "bit-on" : "bit-off")
 
-            store = document.getElementById("store")
+            let store = document.getElementById("store")
             store.setAttribute("class", cpu.store ? "bit-on" : "bit-off")
 
             for (let i = 0; i < cpu.bits; i++) {
                 data = document.getElementById("data-" + i)
                 data.setAttribute("class", cpu.data & (1 << i) ? "bit-on" : "bit-off")
             }
+
+            let code = document.getElementById("code")
+            code.setAttribute("value", cpu.code)
+
+            for (let i = 0; i < cpu.reg.length; i++) {
+                value = 0
+                for (let j = 0; j < cpu.reg[i].bits.length; j++) {
+                    if ((1 << cpu.reg[i].bits[j]) & cpu.data) {
+                        value |= (1 << j)
+                    }
+                }
+
+                let reg = document.getElementById("reg-" + i)
+                reg.textContent = cpu.reg[i].label + ":" + value
+            }
         }
 
         async function loadFile(filename) {
             let program = await (await fetch("prog/" + filename)).text()
+            // console.log(program)
             loadProgram(program)
 
             cpu.filename = filename
             render()
-            update()
         }
 
         function onload() {
-            loadFile("logicgates.js")
+            // loadFile("logicgates.js")
+            loadFile("calculator.js")
             // render()
         }
     </script>

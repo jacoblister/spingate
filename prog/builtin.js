@@ -1,6 +1,6 @@
-init("0000")
+init("0000000000000")
 
 prog("Spin", "0")
 prog("Gate", "1")
-prog("Toggle", "11")
-prog("Back", "000")
+
+X = reg(3, 0, "X")
