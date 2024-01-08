@@ -26,33 +26,22 @@ and = (src, dst) => nand(src, dst) + nand(dst, dst)
 or = (src, dst) => toggle(dst) + toggle(src) + nand(src, dst) + nand(dst, dst) + toggle(dst) + toggle(src)
 
 all = [A, B, C, D, E, F, G]
-dig0 = [A, B, C, D, E, F]
-dig1 = [B, C]
-dig2 = [A, B, D, E, G]
-dig3 = [A, B, C, D, G]
-dig4 = [B, C, F, G]
-dig5 = [A, C, D, F, G]
-dig6 = [A, C, D, E, F, G]
-dig7 = [A, B, C]
-dig8 = [A, B, C, D, E, F, G]
-dig9 = [A, B, C, D, F, G]
-
+dig0 = [G]
+dig1 = [A, D, E, F, G]
+dig2 = [F, C]
+dig3 = [E, F]
+dig4 = [A, D, E]
 num0 = []
 num1 = [A]
 num2 = [B]
 num3 = [A, B]
-num4 = [F]
-num5 = [F, A]
-num6 = [F, B]
-num7 = [F, B, A]
-num8 = [G]
-num9 = [G, A]
+num4 = [C]
 
 segToggle = (dig) => dig.reduce((acc, bit) => acc + toggle(bit), "")
 segClearIf = (dig, DP) => dig.reduce((acc, bit) => acc + and(DP, bit), "")
 segSetIf = (dig, DP) => dig.reduce((acc, bit) => acc + or(DP, bit), "")
-test = () => clear(DP) + or(A, DP) + or(B, DP) + or(C, DP) + or(D, DP) + or(E, DP) + or(F, DP) + or(G, DP)
-convert = (dig, num) => segToggle(dig) + test() + segToggle(dig) + segClearIf(all, DP) + toggle(DP) + segSetIf(num, DP)
+test = () => set(DP) + and(A, DP) + and(B, DP) + and(C, DP) + and(D, DP) + and(E, DP) + and(F, DP) + and(G, DP)
+segToNum = (dig, num) => segToggle(dig) + test() + segToggle(dig) + toggle(DP) + segClearIf(all, DP) + toggle(DP) + segSetIf(num, DP)
 
 prog("A", toggle(A))
 prog("B", toggle(B))
@@ -63,14 +52,7 @@ prog("F", toggle(F))
 prog("G", toggle(G))
 prog("DP", toggle(DP))
 prog("test", test())
-prog("togall", toggle(G) + toggle(F) + toggle(E) + toggle(D) + toggle(C) + toggle(B) + toggle(A))
 prog("tog0", segToggle(dig0))
 prog("tog3", segToggle(dig3))
-prog("toNum",
-    convert(dig0, num0) + convert(dig1, num1) + convert(dig2, num2) + convert(dig3, num3) + convert(dig4, num4) +
-    convert(dig5, num5) + convert(dig6, num6) + convert(dig7, num7) + convert(dig8, num8) + convert(dig9, num9)
-)
-prog("toSeg",
-    convert(num0, dig0) + convert(num1, dig1) + convert(num2, dig2) + convert(num3, dig3) + convert(num4, dig4) +
-    convert(num5, dig5) + convert(num6, dig6) + convert(num7, dig7) + convert(num8, dig8) + convert(num9, dig9)
-)
+prog("3", segToNum(dig3, num3))
+prog("toNum", segToNum(dig0, num0) + segToNum(dig1, num1) + segToNum(dig2, num2) + segToNum(dig3, num3) + segToNum(dig4, num4))
