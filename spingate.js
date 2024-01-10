@@ -16,24 +16,23 @@ function bit(index, label) {
     return index
 }
 
-function reg(from, to, label, seg7) {
+function reg(from, to, label, seg7bits) {
     let bits = []
-    for (i = from; i >= to; i--) {
-        bits.push(i)
+    if (seg7bits) {
+        bits = seg7bits
+    } else {
+        for (i = from; i >= to; i--) {
+            bits.push(i)
+        }
     }
 
-    if (seg7) {
-        bits.reverse()
-        // bits = [8, 7, 1, 4, 3, 5, 6, 2]
-    }
-
-    next.reg.push({ from, to, bits, label, seg7})
+    next.reg.push({ from, to, bits, label, seg7: seg7bits ? 1 : undefined })
 
     return bits
 }
 
-function seg7(from, to, label) {
-    return reg(from, to, label, 1)
+function seg7(from, to, label, bits) {
+    return reg(from, to, label, bits)
 }
 
 let pos = 0
