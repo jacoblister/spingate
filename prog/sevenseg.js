@@ -55,8 +55,11 @@ clearBits = (bits) => bits.reduce((acc, bit) => acc + clear(bit), "")
 segToggle = (dig) => dig.reduce((acc, bit) => acc + toggle(bit), "")
 segClearIf = (dig, DP) => dig.reduce((acc, bit) => acc + and(DP, bit), "")
 segSetIf = (dig, DP) => dig.reduce((acc, bit) => acc + or(DP, bit), "")
-test = () => clear(DP) + or(A, DP) + or(B, DP) + or(C, DP) + or(D, DP) + or(E, DP) + or(F, DP) + or(G, DP)
-convert = (dig, num) => segToggle(dig) + test() + segToggle(dig) + segClearIf(all, DP) + toggle(DP) + segSetIf(num, DP) + clear(DP)
+test = (pattern, bits, dst) => clear(dst) +
+    pattern.reduce((acc, bit) => acc + toggle(bit), "") + 
+    bits.reduce((acc, bit) => acc + or(bit, dst), "") +
+    pattern.reduce((acc, bit) => acc + toggle(bit), "")
+convert = (from, to) => test(from, all, DP) + segClearIf(all, DP) + toggle(DP) + segSetIf(to, DP) + clear(DP)
 toNum = () => dig.reduce((acc, value, i) => acc + convert(value, num[i]), "")
 toSeg = () => num.reduce((acc, value, i) => acc + convert(value, dig[i]), "")
 swapAB = () => swap(A0, B0, C) + swap(A1, B1, C) + swap(A2, B2, C) + swap(A3, B3, C)

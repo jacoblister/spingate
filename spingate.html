@@ -117,7 +117,8 @@
                                 "lsfr.js",
                                 "cellular.js",
                                 "calculator.js",
-                                "sevenseg.js"
+                                "sevenseg.js",
+                                "mc14500b.js",
                             ].map(option => elem("option", { selected: cpu.filename == option ? 1 : undefined }, option)))
                     ),
                     // elem("td", { colspan: 3 },
@@ -260,9 +261,12 @@
         }
 
         function onload() {
+            // loadFile("builtin.js")
             // loadFile("logicgates.js")
             // loadFile("calculator.js")
-            loadFile("sevenseg.js")
+            // loadFile("sevenseg.js")
+            loadFile("mc14500b.js")
+
             // render()
         }
     </script>
