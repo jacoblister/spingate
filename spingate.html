@@ -41,12 +41,18 @@
                 return
             }
 
+            let chunk = ~~(code.length / 20) + 1
+
             cpu.code = code
             function nextStep() {
-                if (step()) {
+                count = chunk
+                while (count && step()) {
+                    count--
+                }
+                if (!count) {
                     setTimeout(() => {
                         nextStep()
-                    }, 1)
+                    }, 10)
                 }
                 update()
             }
@@ -154,7 +160,7 @@
                             }
                         },
                         prog.name)),
-                    elem("td", { colspan: 13 }, elem("input", { value: prog.code, disabled: 1 })),
+                    elem("td", { colspan: 13 }, elem("input", { value: prog.code, title:prog.code, disabled: 1 })),
                 )),
                 elem("tr"),
                 elem("tr",
