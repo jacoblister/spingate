@@ -117,8 +117,8 @@ Further operations can be composed by defining new functions using the *nand()* 
 
 ```
 toggle = (reg) => nand(reg, reg)
-clear = (reg) => nand(reg, logic0)
-set = (reg) => nand(reg, logic0) + toggle(reg)
+clear = (reg) => nand(logic0, reg)
+set = (reg) => nand(logic0, reg) + toggle(reg)
 copy = (src, dst) => nand(logic0, dst) + nand(src, dst)
 swap = (src, dst) => copy(dst, tmp0) + copy(src, dst) + copy(tmp0, dst)
 ```
@@ -126,8 +126,8 @@ swap = (src, dst) => copy(dst, tmp0) + copy(src, dst) + copy(tmp0, dst)
 ## Logic Gates
 
 ```
-and = (dst, src) => nand(dst, src) + toggle(dst)
-or = (dst, src) => toggle(dst) + toggle(src) + nand(dst, src) + toggle(src)
-nor = (dst, src) => or(dst, src) + toggle(dst)
+and = (src, dst) => nand(src, dst) + toggle(dst)
+or = (src, dst) => toggle(dst) + toggle(src) + nand(src, dst) + toggle(src)
+nor = (src, dst) => or(src, dst) + toggle(dst)
 ```
 
