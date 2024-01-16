@@ -28,7 +28,7 @@ SpinGate does not support I/O, however, the begining of a program can be used to
 
 # Hardware Implementation
 
-SpinGate has been implmented in hardware using only 7400 series logic chips, see Ditial simulation:
+SpinGate has been implmented in hardware using only 7400 series logic chips, see Digital simulation:
 
 ![Digital](Digital/screenshot.png "Digital")
 
