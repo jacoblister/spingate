@@ -104,7 +104,7 @@ Perform a NAND operation on two bits:
 *nand(src, dst)*
 
 ```
-prog("Clear A", nand(regA, logic0))
+prog("Clear A", nand(logic0, regA))
 ```
 
 Internally, *nand()* keeps track of the shift register position and uses the register size defined by *init()* to rotate bit indexes into place.  It is therefore defined as a builtin function, to simplify maintaining programs if the register size is changed.
