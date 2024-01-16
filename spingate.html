@@ -114,16 +114,13 @@
                             [
                                 "builtin.js",
                                 "logicgates.js",
-                                "lsfr.js",
-                                "cellular.js",
                                 "calculator.js",
-                                "sevenseg.js",
                                 "mc14500b.js",
                             ].map(option => elem("option", { selected: cpu.filename == option ? 1 : undefined }, option)))
                     ),
-                    // elem("td", { colspan: 3 },
-                    //     elem("button", { id: "edit", disabled: 1 }, "Edit")
-                    // )
+                    elem("td", { colspan: 3 },
+                        elem("a", { href: "https://github.com/jacoblister/spingate/blob/main/prog/" + cpu.filename, target: "_blank" }, "Source")
+                    )
                 ),
                 elem("tr"),
                 elem("tr",
@@ -146,13 +143,13 @@
                 ),
                 regs,
                 elem("tr"),
-                elem("tr",
-                    elem("td", elem("button", { disabled: 1 }, "Step")),
-                    elem("td", { colspan: 13 },
-                        elem("input", { id: "code", type: "text", value: "", disabled: 1 })
-                    )
-                ),
-                elem("tr"),
+                // elem("tr",
+                //     elem("td", elem("button", { disabled: 1 }, "Step")),
+                //     elem("td", { colspan: 13 },
+                //         elem("input", { id: "code", type: "text", value: "", disabled: 1 })
+                //     )
+                // ),
+                // elem("tr"),
                 cpu.prog.map((prog, index) => elem("tr",
                     elem("td", elem("button",
                         {
@@ -164,42 +161,42 @@
                     elem("td", { colspan: 13 }, elem("input", { value: prog.code, title:prog.code, disabled: 1 })),
                 )),
                 elem("tr"),
-                elem("tr",
-                    elem("td", { colspan: 1 }, elem("button", "<< Less")),
-                ),
-                elem("tr",
-                    elem("td", elem("button", "Custom")),
-                    elem("td", { colspan: 13 }, elem("input", { value: "" })),
-                ),
-                elem("tr",
-                    elem("td", "Loop"),
-                    elem("td", { colspan: 13 },
-                        elem("select", [
-                            "None",
-                            "Slow",
-                            "Medium",
-                            "Fase",
-                        ].map(option => elem("option", option)))
-                    ),
-                ),
-                [
-                    "Step",
-                    "Slow",
-                    "Medium",
-                    "Fast",
-                ].map((speed, index) => elem("tr",
-                    elem("td", index == 0 ? "Speed" : ""),
-                    elem("td", { colspan: 13, style: "display:flex; flex-direction:row;" },
-                        elem("input", {
-                            id: speed, type: "radio", checked: speed == cpu.speed ? 1 : undefined,
-                            click: (e) => {
-                                cpu.speed = e.target.id
-                                render()
-                            }
-                        }),
-                        elem("label", { for: speed }, speed),
-                    ),
-                )),
+                // elem("tr",
+                //     elem("td", { colspan: 1 }, elem("button", "<< Less")),
+                // ),
+                // elem("tr",
+                //     elem("td", elem("button", "Custom")),
+                //     elem("td", { colspan: 13 }, elem("input", { value: "" })),
+                // ),
+                // elem("tr",
+                //     elem("td", "Loop"),
+                //     elem("td", { colspan: 13 },
+                //         elem("select", [
+                //             "None",
+                //             "Slow",
+                //             "Medium",
+                //             "Fase",
+                //         ].map(option => elem("option", option)))
+                //     ),
+                // ),
+                // [
+                //     "Step",
+                //     "Slow",
+                //     "Medium",
+                //     "Fast",
+                // ].map((speed, index) => elem("tr",
+                //     elem("td", index == 0 ? "Speed" : ""),
+                //     elem("td", { colspan: 13, style: "display:flex; flex-direction:row;" },
+                //         elem("input", {
+                //             id: speed, type: "radio", checked: speed == cpu.speed ? 1 : undefined,
+                //             click: (e) => {
+                //                 cpu.speed = e.target.id
+                //                 render()
+                //             }
+                //         }),
+                //         elem("label", { for: speed }, speed),
+                //     ),
+                // )),
             ))
             update()
         }
@@ -219,8 +216,8 @@
                 data.setAttribute("class", cpu.data & (1 << i) ? "bit-on" : "bit-off")
             }
 
-            let code = document.getElementById("code")
-            code.setAttribute("value", cpu.code)
+            // let code = document.getElementById("code")
+            // code.setAttribute("value", cpu.code)
 
             for (let i = 0; i < cpu.reg.length; i++) {
                 if (cpu.reg[i].seg7) {
@@ -261,11 +258,11 @@
         }
 
         function onload() {
-            // loadFile("builtin.js")
+            loadFile("builtin.js")
             // loadFile("logicgates.js")
             // loadFile("calculator.js")
             // loadFile("sevenseg.js")
-            loadFile("mc14500b.js")
+            // loadFile("mc14500b.js")
 
             // render()
         }

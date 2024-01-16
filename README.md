@@ -18,6 +18,10 @@ The instruction is as follows
 |1            | when load - accum <= bit0, phase <= store           |
 |             | when store - bit0 <= bit0 NAND accum, phase <= load |
 
+# I/O
+
+SpinGate does not support I/O, however, the begining of a program can be used to set the state of the data register, and the data register can be considered as output at the completion of a program
+
 # Implementation
 A SpinGate machine can be implemented in JavaScript as follows:
 
@@ -85,23 +89,13 @@ out = bit(3, "R")
 
 Perform a NAND operation on two bits:
 
-*nand(dst, src)*
+*nand(src, dst)*
 
 ```
 prog("Clear A", nand(regA, logic0))
 ```
 
 Internally, *nand()* keeps track of the shift register position and uses the register size defined by *init()* to rotate bit indexes into place.  It is therefore defined as a builtin function, to simplify maintaining programs if the register size is changed.
-
-## Align
-
-Optionally rotate the shift register back to its inital orientation as initalized with *init()*
-
-*align()*
-
-```
-align()
-```
 
 # Composing Programs
 
@@ -113,10 +107,9 @@ Further operations can be composed by defining new functions using the *nand()* 
 toggle = (reg) => nand(reg, reg)
 clear = (reg) => nand(reg, logic0)
 set = (reg) => nand(reg, logic0) + toggle(reg)
-copy = (dst, src) => nand(dst, logic0) + nand(dst, src)
-swap = (dst, src) => copy(tmp0, dst) + copy(dst, src) + copy(dst, tmp0)
+copy = (src, dst) => nand(logic0, dst) + nand(src, dst)
+swap = (src, dst) => copy(dst, tmp0) + copy(src, dst) + copy(tmp0, dst)
 ```
-
 
 ## Logic Gates
 
@@ -125,3 +118,11 @@ and = (dst, src) => nand(dst, src) + toggle(dst)
 or = (dst, src) => toggle(dst) + toggle(src) + nand(dst, src) + toggle(src)
 nor = (dst, src) => or(dst, src) + toggle(dst)
 ```
+
+# Hardware Implementation
+
+SpinGate has been implmented in hardware using only 7400 series logic chips, see Ditial simulation:
+
+![Digital](Digital/screenshot.png "Digital")
+
+![Bread Board](breadboard.jpg "Bread Board")

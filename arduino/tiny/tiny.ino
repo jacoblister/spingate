@@ -31,19 +31,19 @@ void loop()
   if (spin_button_next && spin_button_next != spin_button)
   {
     spin_or_gate = 0;
-    pulse_ticks = 50;
+    pulse_ticks = 2;
   }
 
   if (gate_button_next && gate_button_next != gate_button)
   {
     spin_or_gate = 1;
-    pulse_ticks = 50;
+    pulse_ticks = 2;
   }
 
   PORTB = (PORTB & 0b11111000) | 
           (spin_or_gate ? (1 << 2) : 0) |
-          (pulse_ticks < 25 && pulse_ticks > 0 ? (1 << 1) : 0) |
-          (pulse_ticks < 25 && pulse_ticks > 0 && spin_or_gate == 0 ? (1 << 0) : 0);
+          (pulse_ticks < 2 && pulse_ticks > 0 ? (1 << 1) : 0) |
+          (pulse_ticks < 2 && pulse_ticks > 0 && spin_or_gate == 0 ? (1 << 0) : 0);
   // digitalWrite(pin_out0, spin_button_next);
   // digitalWrite(pin_out1, gate_button_next);
   // PORTB = (PORTB & 0b11111000) |
@@ -62,5 +62,5 @@ void loop()
     spin_or_gate = 0;
   }
 
-  delay(1);
+  delay(50);
 }

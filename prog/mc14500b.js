@@ -54,14 +54,14 @@ testBits = (pattern, bits, dst) => clear(dst) +
     toggle(dst)
 setIf = (tst, dst) => clear(dst) + or(tst, dst)
 copyIf = (tst, src, dst) => copy(src, T_TMP) + and(tst, T_TMP) + toggle(tst) + and(tst, dst) + toggle(tst) + or(T_TMP, dst)
-inst = (pattern) => setBits(pattern, [I3, I2, I1, I0])
+// inst = (pattern) => setBits(pattern, [I3, I2, I1, I0])
 instTest = (pattern, dst) => testBits(pattern, [I3, I2, I1, I0], dst)
 skipTest = (dst) => toggle(sk) + and(sk, dst) + toggle(sk)
 
 copyDI = (dst) => copy(DI, dst) + and(ie, dst)
 
-doexec = (pattern) => 
-    inst(pattern) + 
+doexec = (inst) => 
+    setBits(inst, [I3, I2, I1, I0]) + 
     instTest(NOPO, T_TEST) + setIf(T_TEST, FO) + 
     instTest(LD, T_TEST) + skipTest(T_TEST) + copyDI(T_DATA) + copyIf(T_TEST, T_DATA, RR) + 
     instTest(LDC, T_TEST) + skipTest(T_TEST) + copyDI(T_DATA) + toggle(T_DATA) + copyIf(T_TEST, T_DATA, RR) + 
@@ -79,7 +79,6 @@ doexec = (pattern) =>
     instTest(OEN, T_TEST) + skipTest(T_TEST) + copyIf(T_TEST, DI, oe) +
 
     clear(sk) + 
-
     instTest(RTN, T_TEST) + setIf(T_TEST, RT) + setIf(T_TEST, sk) +
     instTest(SKZ, T_TEST) + skipTest(T_TEST) + copyIf(T_TEST, RR, sk) +
     instTest(JMP, T_TEST) + setIf(T_TEST, JP) +
