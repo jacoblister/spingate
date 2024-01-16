@@ -2,6 +2,10 @@
 
 SpinGate is a [1 bit computer](https://en.wikipedia.org/wiki/1-bit_computing) with a corresponding single bit [1-instruction language](https://en.wikipedia.org/wiki/One-instruction_set_computer) intended to be implemented in hardware with the minimum number of logic gates.  It has only a single 1-bit instruction - 0 or 1
 
+# Demo
+
+[Interactive Demo](https://jacoblister.github.io/spingate/)
+
 # SpinGate Machine and Instruction
 
 A SpinGate machines consists of
@@ -22,7 +26,15 @@ The instruction is as follows
 
 SpinGate does not support I/O, however, the begining of a program can be used to set the state of the data register, and the data register can be considered as output at the completion of a program
 
-# Implementation
+# Hardware Implementation
+
+SpinGate has been implmented in hardware using only 7400 series logic chips, see Ditial simulation:
+
+![Digital](Digital/screenshot.png "Digital")
+
+![Bread Board](breadboard.jpg "Bread Board")
+
+# JavaScript Implementation
 A SpinGate machine can be implemented in JavaScript as follows:
 
 ```
@@ -119,10 +131,3 @@ or = (dst, src) => toggle(dst) + toggle(src) + nand(dst, src) + toggle(src)
 nor = (dst, src) => or(dst, src) + toggle(dst)
 ```
 
-# Hardware Implementation
-
-SpinGate has been implmented in hardware using only 7400 series logic chips, see Ditial simulation:
-
-![Digital](Digital/screenshot.png "Digital")
-
-![Bread Board](breadboard.jpg "Bread Board")

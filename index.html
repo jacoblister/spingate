@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="spingate.css">
     <script src="spingate.js"></script>
     <script>
@@ -158,7 +159,7 @@
                             }
                         },
                         prog.name)),
-                    elem("td", { colspan: 13 }, elem("input", { value: prog.code, title:prog.code, disabled: 1 })),
+                    elem("td", { colspan: 13 }, elem("input", { value: prog.code, title: prog.code, disabled: 1 })),
                 )),
                 elem("tr"),
                 // elem("tr",
@@ -271,8 +272,12 @@
 
 <body onload="onload()">
     <h1>SpinGate</h1>
-    <p>SpinGate is a [1-bit computer] with a corresponding single bit [1-instruction language].
-        It has only a single instruction - 0 or 1</p>
+    <p>SpinGate is a 1-bit computer with a corresponding single bit 1-instruction language.</p>
+    <p>It has only a single instruction - 0 or 1</p>
+    <p>0 - rotate shift register<br/>
+    1 - when load &nbsp;- accum &lt;= bit0, phase &lt;= store</br>
+    &nbsp; - when store - bit0 NAND accum, phase &lt;= load</br>
+    </p>
     <p>Choose a program:</p>
 
     <table id="table"></table>
