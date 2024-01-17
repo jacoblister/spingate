@@ -17,7 +17,7 @@
                     element.textContent = arg
                 } else if (Array.isArray(arg)) {
                     arg.forEach(item => {
-                        element.appendChild(item)
+                        if (item != undefined) { element.appendChild(item) }
                     })
                 } else if (typeof arg == "object") {
                     for (key in arg) {
@@ -136,11 +136,12 @@
                 elem("tr"),
                 elem("tr",
                     elem("td", "Data"),
-                    cpu.label.map((bit, index) => elem("td", { id: "data-" + index, class: cpu.data & (1 << index) ? "bit-on" : "bit-off" }))
+                    cpu.label.map((bit, index) => bit == "h" ? undefined :
+                        elem("td", { id: "data-" + index, class: cpu.data & (1 << index) ? "bit-on" : "bit-off" }))
                 ),
                 elem("tr",
                     elem("td"),
-                    cpu.label.map((bit, index) => elem("td", bit))
+                    cpu.label.map((bit, index) => bit == "h" ? undefined : elem("td", bit))
                 ),
                 regs,
                 elem("tr"),
@@ -214,7 +215,9 @@
 
             for (let i = 0; i < cpu.bits; i++) {
                 data = document.getElementById("data-" + i)
-                data.setAttribute("class", cpu.data & (1 << i) ? "bit-on" : "bit-off")
+                if (data) {
+                    data.setAttribute("class", cpu.data & (1 << i) ? "bit-on" : "bit-off")
+                }
             }
 
             // let code = document.getElementById("code")
@@ -272,12 +275,18 @@
 
 <body onload="onload()">
     <h1>SpinGate</h1>
-    <p>SpinGate is a 1-bit computer with a corresponding single bit 1-instruction language.</p>
-    <p>It has only a single instruction - 0 or 1</p>
-    <p>0 - rotate shift register<br/>
-    1 - when load &nbsp;- accum &lt;= bit0, phase &lt;= store</br>
-    &nbsp; - when store - bit0 NAND accum, phase &lt;= load</br>
-    </p>
+    <pre>
+SpinGate is a 1-bit computer with a corresponding 
+single bit 1-instruction language.
+
+It has only a single instruction - 0 or 1
+
+0 - rotate shift register
+1 - when load  - accum &lt;= bit0 
+                 phase &lt;= store
+    when store - bit0  &lt;= bit0 NAND accum
+                 phase &lt;= load
+    </pre>
     <p>Choose a program:</p>
 
     <table id="table"></table>

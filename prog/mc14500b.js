@@ -1,17 +1,18 @@
 init("00000000000000000000")
 
-Z = 0
-T_TEST = 1
-T_TMP = 2
-T_DATA = 3
-T3 = 4
+Z = bit(0, "h")
+T_TEST = bit(1, "h")
+T_TMP = bit(2, "h")
+T_DATA = bit(3, "h")
+T3 = bit(4, "h")
+
 I3 = bit(5, "I3")
 I2 = bit(6, "I2")
 I1 = bit(7, "I1")
 I0 = bit(8, "I0")
 DI = bit(9, "DI")
 DO = bit(10, "DO")
-W = bit(11, "W")
+W = bit(11, "WR")
 RR = bit(12, "RR")
 JP = bit(13, "JP")
 RT = bit(14, "RT")
