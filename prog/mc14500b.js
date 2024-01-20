@@ -45,7 +45,7 @@ clear = (dst) => set(dst) + nand(dst, dst)
 copy = (src, dst) => set(dst) + nand(src, dst) + nand(dst, dst)
 swap = (src, dst, tmp) => copy(src, tmp) + copy(dst, src) + copy(tmp, dst)
 and = (src, dst) => nand(src, dst) + nand(dst, dst)
-or = (src, dst) => toggle(dst) + toggle(src) + nand(src, dst) + nand(dst, dst) + toggle(dst) + toggle(src)
+or = (src, dst) => toggle(dst) + toggle(src) + nand(src, dst) + toggle(src)
 xor = (src, dst, tmpA) => copy(src, tmpA) + nand(dst, tmpA) + nand(tmpA, dst) + nand(src, tmpA) + nand(tmpA, dst)
 setBits = (pattern, bits) => bits.reduce((acc, bit) => acc + clear(bit), "") + pattern.reduce((acc, bit) => acc + set(bit), "")
 testBits = (pattern, bits, dst) => clear(dst) +
