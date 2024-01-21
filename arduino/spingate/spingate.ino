@@ -105,34 +105,45 @@ void setup()
   setupHardWare();
 }
 
-int spin_or_gate = 0;
-int spin_button = 0;
-int gate_button = 0;
-int pulse_ticks = 0;
+int readButtons(void) {
+  int result = 0;
+  static int spin_button = 0;
+  static int gate_button = 0;
 
-void loop()
-{
   int spin_button_next = readButton(0);
   int gate_button_next = readButton(1);
 
   if (spin_button_next && spin_button_next != spin_button)
   {
-    spin_or_gate = 0;
-    pulse_ticks = 50;
+    result = 1;
   }
 
   if (gate_button_next && gate_button_next != gate_button)
   {
-    spin_or_gate = 1;
-    pulse_ticks = 50;
+    result = 2;
   }
 
+  spin_button = spin_button_next;
+  gate_button = gate_button_next;
+
+  return result;
+}
+
+int spin_or_gate = 0;
+int pulse_ticks = 0;
+
+void loop()
+{
+  int button = readButtons();
+  if (button != 0) {
+    spin_or_gate = button - 1;
+    pulse_ticks = 50;
+  }
+  
   writeSignals(spin_or_gate,
                pulse_ticks < 25 && pulse_ticks > 0,
                pulse_ticks < 25 && pulse_ticks > 0 && spin_or_gate == 0);
 
-  spin_button = spin_button_next;
-  gate_button = gate_button_next;
   if (pulse_ticks > 0)
   {
     pulse_ticks--;
@@ -142,5 +153,6 @@ void loop()
     spin_or_gate = 0;
   }
 
-  delay(10);
+  // delay(1);
+  delayMicroseconds(1000);
 }
