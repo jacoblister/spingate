@@ -107,52 +107,88 @@ void setup()
 
 int readButtons(void) {
   int result = 0;
-  static int spin_button = 0;
-  static int gate_button = 0;
+  static int button0 = 0;
+  static int button1 = 0;
+  static int button2 = 0;
 
-  int spin_button_next = readButton(0);
-  int gate_button_next = readButton(1);
+  int button0_next = readButton(0);
+  int button1_next = readButton(1);
+  int button2_next = readButton(2);
 
-  if (spin_button_next && spin_button_next != spin_button)
+  if (button0_next && button0_next != button0)
   {
     result = 1;
   }
 
-  if (gate_button_next && gate_button_next != gate_button)
+  if (button1_next && button1_next != button1)
   {
     result = 2;
   }
 
-  spin_button = spin_button_next;
-  gate_button = gate_button_next;
+  if (button2_next && button2_next != button2)
+  {
+    result = 3;
+  }
+
+  button0 = button0_next;
+  button1 = button1_next;
+  button2 = button2_next;
 
   return result;
 }
 
-int spin_or_gate = 0;
-int pulse_ticks = 0;
+byte progSpin[] = {0x00, 0x01, 0x00};
+byte progGate[] = {0x00, 0x01, 0x01};
+byte progSpinBack[] = {0x00, 0x0C, 0x00};
+byte *progActive = NULL; 
+int progIndex = 0;
+int progPhase = 0;
+int divider = 0;
+
+#define DIVIDER 1
 
 void loop()
 {
-  int button = readButtons();
-  if (button != 0) {
-    spin_or_gate = button - 1;
-    pulse_ticks = 50;
-  }
-  
-  writeSignals(spin_or_gate,
-               pulse_ticks < 25 && pulse_ticks > 0,
-               pulse_ticks < 25 && pulse_ticks > 0 && spin_or_gate == 0);
+  if (progActive) {
+    if (divider == 0) {
+      int length = progActive[1];
+      int bit = progActive[2];
+      if (progPhase == 0) {
+        if (progIndex == length) {
+          progActive = NULL;
+          bit = 0;
+        }
+        writeSignals(bit, 0, 0);
 
-  if (pulse_ticks > 0)
-  {
-    pulse_ticks--;
-  }
-  else
-  {
-    spin_or_gate = 0;
+        progPhase = 1;
+      } else {
+        writeSignals(bit, 1, !bit);
+
+        progPhase = 0;
+        progIndex++;
+      }
+
+      divider = DIVIDER;
+    } else {
+      divider--;
+    }
+  } else {
+    int button = readButtons();
+    if (button != 0) {
+      if (button == 1) {
+        progActive = progSpin;
+      }
+      if (button == 2) {
+        progActive = progGate;
+      }
+      if (button == 3) {
+        progActive = progSpinBack;
+      }
+
+      progIndex = 0;
+      progPhase = 0;
+    }
   }
 
-  // delay(1);
   delayMicroseconds(1000);
 }
