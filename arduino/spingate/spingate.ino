@@ -138,8 +138,10 @@ int readButtons(void) {
 }
 
 byte progSpin[] = {0x00, 0x01, 0x00};
-byte progGate[] = {0x00, 0x01, 0x01};
-byte progSpinBack[] = {0x00, 0x0C, 0x00};
+byte progGate[] = {0x00, 0x01, 0x80};
+// byte progSpinBack[] = {0x00, 0x0C, 0x00};
+// byte progSpinBack[] = {0x00, 0x04, 0xC0};
+byte progSpinBack[] = {0x00, 0x0F, 0x18, 0x00};
 byte *progActive = NULL; 
 int progIndex = 0;
 int progPhase = 0;
@@ -152,7 +154,7 @@ void loop()
   if (progActive) {
     if (divider == 0) {
       int length = progActive[1];
-      int bit = progActive[2];
+      int bit = (progActive[(progIndex >> 3) + 2] >> (7 - (progIndex & 7))) & 1;
       if (progPhase == 0) {
         if (progIndex == length) {
           progActive = NULL;
@@ -190,5 +192,5 @@ void loop()
     }
   }
 
-  delayMicroseconds(1000);
+  delayMicroseconds(1);
 }
