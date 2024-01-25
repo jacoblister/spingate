@@ -115,5 +115,26 @@ function exec(code) {
     while (step()) { }
 }
 
+function encode(code) {
+    let bytes = []
+
+    for (i = 0; i < code.length; i++) {
+        bytes[i >> 3] |= code[i] == "1" ? (1 << (7 - (i & 7))) : 0;
+    }
+
+    bytes = [code.length >> 8, code.length & 0xFF].concat(bytes)
+
+    let result = "{"
+    for (i = 0; i < bytes.length; i++) {
+        result += "0x" + (bytes[i]).toString(16).padStart(2, '0')
+        if (i < bytes.length - 1) { result += "," }
+        if (i % 16 == 15) { result += '\n' }
+    }
+
+    result += "}"
+    
+    return result
+}
+
 init("0000")
 done()
