@@ -170,19 +170,16 @@ int countButton(int index)
   return count;
 }
 
-byte progSpin[] = {0x00, 0x01, 0x00};
-byte progGate[] = {0x00, 0x01, 0x80};
-// byte progSpinBack[] = {0x00, 0x0C, 0x00};
-// byte progSpinBack[] = {0x00, 0x04, 0xC0};
-byte progSpinBack[] = {0x00, 0x0F, 0x18, 0x00};
-byte *progActive = NULL;
+#include "program.h"
+
+const byte *progActive = NULL;
 int progIndex = 0;
 int progPhase = 0;
 
 #define PROG_DIVIDER 1
-#define BUTTON_DIVIDER 1000
+#define BUTTON_DIVIDER 1
 int progDivider = 0;
-int buttonDivider = 0;
+int buttonDivider = 1000;
 
 void loop()
 {
@@ -193,20 +190,28 @@ void loop()
 
     if (!progActive)
     {
-      int button = countButton(0);
-      switch (button)
+      if (clickButton(0))
       {
-      case 1:
         progActive = progSpin;
-        break;
-      case 2:
-        progActive = progGate;
-        break;
       }
 
-      if (clickButton(1)) {
+      if (clickButton(1))
+      {
+        progActive = progGate;
+      }
+
+      if (clickButton(2))
+      {
         progActive = progSpinBack;
       }
+
+      // int button = countButton(2);
+      // switch (button)
+      // {
+      // case 1:
+      //   progActive = progSpinBack;
+      //   break;
+      // }
 
       if (progActive)
       {
@@ -214,15 +219,18 @@ void loop()
         progPhase = 0;
       }
     }
+  } else {
+    buttonDivider--;
   }
-  buttonDivider--;
 
   if (progActive)
   {
     if (progDivider == 0)
     {
-      int length = progActive[1];
-      int bit = (progActive[(progIndex >> 3) + 2] >> (7 - (progIndex & 7))) & 1;
+      int length = pgm_read_byte_near(progActive + 0) << 8 | pgm_read_byte_near(progActive + 1); 
+      byte data = pgm_read_byte_near(progActive + (progIndex >> 3) + 2);
+      byte bit = (data >> (7 - (progIndex & 7))) & 1;
+
       if (progPhase == 0)
       {
         if (progIndex == length)
@@ -250,5 +258,5 @@ void loop()
     }
   }
 
-  delayMicroseconds(1);
+  // delayMicroseconds(10);
 }
