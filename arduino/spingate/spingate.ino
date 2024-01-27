@@ -29,6 +29,11 @@ void setupHardWare()
   pinMode(in2_pin, INPUT_PULLUP);
   pinMode(in2_gnd_pin, OUTPUT);
   digitalWrite(in2_gnd_pin, LOW);
+
+  TCCR1A = 0;          // Init Timer1A
+  TCCR1B = 0;          // Init Timer1B
+  TCCR1B |= B00000101; // Clk (1024 prescaler)
+  TCNT1 = 0;
 }
 
 int readButton(int index)
@@ -73,6 +78,17 @@ void setupHardWare()
   pinMode(A0, INPUT);
   pinMode(in1_pin, INPUT_PULLUP);
   pinMode(in2_pin, INPUT_PULLUP);
+
+  noInterrupts();
+  TCCR1 = 0; // Init Timer1
+             //  TCCR1 |= B00001111;  // Clk (16384 prescaler)
+  // TCCR1 |= B00001011;  // Clk (1024 prescaler)
+  TCCR1 |= B00001010; // Clk (512 prescaler)
+  TCNT1 = 0;
+
+  CLKPR = 0x80; // enable clock prescale change
+  CLKPR = 0;    // no prescale
+  interrupts();
 }
 
 int readButton(int index)
@@ -177,16 +193,15 @@ int progIndex = 0;
 int progPhase = 0;
 
 #define PROG_DIVIDER 1
-#define BUTTON_DIVIDER 1
 int progDivider = 0;
-int buttonDivider = 1000;
 
 void loop()
 {
-  if (buttonDivider == 0)
+  if (TCNT1 & 16)
   {
+    TCNT1 = 0;
+
     updateButtons();
-    buttonDivider = BUTTON_DIVIDER;
 
     if (!progActive)
     {
@@ -200,18 +215,18 @@ void loop()
         progActive = progGate;
       }
 
-      if (clickButton(2))
-      {
-        progActive = progSpinBack;
-      }
-
-      // int button = countButton(2);
-      // switch (button)
+      // if (clickButton(2))
       // {
-      // case 1:
       //   progActive = progSpinBack;
-      //   break;
       // }
+
+      int button = countButton(2);
+      switch (button)
+      {
+      case 2:
+        progActive = progSpinBack;
+        break;
+      }
 
       if (progActive)
       {
@@ -219,15 +234,13 @@ void loop()
         progPhase = 0;
       }
     }
-  } else {
-    buttonDivider--;
   }
 
   if (progActive)
   {
     if (progDivider == 0)
     {
-      int length = pgm_read_byte_near(progActive + 0) << 8 | pgm_read_byte_near(progActive + 1); 
+      int length = pgm_read_byte_near(progActive + 0) << 8 | pgm_read_byte_near(progActive + 1);
       byte data = pgm_read_byte_near(progActive + (progIndex >> 3) + 2);
       byte bit = (data >> (7 - (progIndex & 7))) & 1;
 
