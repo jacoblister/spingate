@@ -80,7 +80,7 @@ register a SpinGate program
 prog("spin", "0")
 prog("gate", "1")
 prog("spin back", "000")
-prog("toggle", "111")
+prog("toggle", "11")
 prog("nop", "1111")
 ```
 
