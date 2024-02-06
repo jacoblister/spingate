@@ -188,7 +188,7 @@ int countButton(int index)
 
 #include "program.h"
 
-const byte *progActive = NULL;
+const byte **progActive = NULL;
 int progIndex = 0;
 int progPhase = 0;
 
@@ -205,26 +205,70 @@ void loop()
 
     if (!progActive)
     {
-      if (clickButton(0))
-      {
-        progActive = progSpin;
-      }
-
-      if (clickButton(1))
-      {
-        progActive = progGate;
-      }
+      // if (clickButton(1))
+      // {
+      //   progActive = progA;
+      // }
 
       // if (clickButton(2))
       // {
-      //   progActive = progSpinBack;
+      //   progActive = progB;
       // }
 
-      int button = countButton(2);
+      int button = countButton(0);
       switch (button)
       {
+      case 1:
+        progActive = prog1;
+        break;
       case 2:
-        progActive = progSpinBack;
+        progActive = prog2;
+        break;
+      case 3:
+        progActive = prog3;
+        break;
+      case 4:
+        progActive = prog4;
+        break;
+      case 5:
+        progActive = prog5;
+        break;
+      case 6:
+        progActive = prog6;
+        break;
+      case 7:
+        progActive = prog7;
+        break;
+      case 8:
+        progActive = prog8;
+        break;
+      case 9:
+        progActive = prog9;
+        break;
+      }
+
+      button = countButton(1);
+      switch (button)
+      {
+      case 1:
+        progActive = progAdd;
+        break;
+      case 2:
+        progActive = progSub;
+        break;
+      case 3:
+        progActive = progSwap;
+        break;
+      }
+      
+      button = countButton(2);
+      switch (button)
+      {
+      case 1:
+        progActive = progGate;
+        break;
+      case 2:
+        progActive = progSpin;
         break;
       }
 
@@ -240,27 +284,31 @@ void loop()
   {
     if (progDivider == 0)
     {
-      int length = pgm_read_byte_near(progActive + 0) << 8 | pgm_read_byte_near(progActive + 1);
-      byte data = pgm_read_byte_near(progActive + (progIndex >> 3) + 2);
+      int length = pgm_read_byte_near(*progActive + 0) << 8 | pgm_read_byte_near(*progActive + 1);
+      byte data = pgm_read_byte_near(*progActive + (progIndex >> 3) + 2);
       byte bit = (data >> (7 - (progIndex & 7))) & 1;
 
       if (progPhase == 0)
       {
-        if (progIndex == length)
-        {
-          progActive = NULL;
-          bit = 0;
-        }
         writeSignals(bit, 0, 0);
-
         progPhase = 1;
       }
       else
       {
         writeSignals(bit, 1, !bit);
-
         progPhase = 0;
         progIndex++;
+      }
+
+      if (progIndex == length)
+      {
+        progIndex = 0;
+        progActive++;
+        length = pgm_read_byte_near(*progActive + 0) << 8 | pgm_read_byte_near(*progActive + 1);
+        if (length == 0)
+        {
+          progActive = NULL;
+        }
       }
 
       progDivider = PROG_DIVIDER;
